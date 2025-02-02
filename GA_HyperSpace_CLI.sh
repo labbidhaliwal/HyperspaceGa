@@ -34,14 +34,12 @@ screen -S hyperspace -X stuff "tail -f /root/hyperspace_model_download.log\n"
 echo "✅ Model download command sent to the screen session."
 
 # Step 8: Ask for the private key to import and save it automatically
-echo "🔑 Please provide your private key. It will be saved in the 'my.pem' file."
+echo "🔑 Please provide your private key."
 
-# Prompt user to enter the private key
-echo "Enter your private key below:"
-
-# Save the private key entered by the user directly to the my.pem file
-cat > /root/my.pem
-
+# Read the private key from the user input and save it to the file
+echo "Enter your private key:"
+read -p "Private Key: " private_key
+echo $private_key > /root/my.pem
 echo "✅ Private key saved to /root/my.pem"
 
 # Step 9: Import the private key and login to Hive
