@@ -22,9 +22,7 @@ sleep 10 # Adjust time if needed to give the node enough time to start
 
 # Step 6: Download the model (this will run in the same screen session)
 echo "🔄 Downloading the required model..."
-
-# Run the download command and redirect output to a log file
-screen -S hyperspace -X stuff "aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf > /root/hyperspace_model_download.log 2>&1\n"
+screen -S hyperspace -X stuff "aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf\n"
 
 # Display the download progress by tailing the log file
 echo "📊 Showing download progress..."
