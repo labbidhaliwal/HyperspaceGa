@@ -6,7 +6,8 @@ curl https://download.hyper.space/api/install | bash
 
 # Step 2: Reload bashrc to make sure the environment is updated
 echo "🔄 Reloading .bashrc to apply environment changes..."
-source /root/.bashrc
+echo 'export PATH=$PATH:/root/.aios' >> ~/.bashrc
+source ~/.bashrc
 
 # Step 3: Create a screen session to run the node in the background
 echo "🎥 Creating a screen session for Hyperspace..."
