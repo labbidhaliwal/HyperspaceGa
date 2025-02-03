@@ -46,7 +46,27 @@ echo "✅ Hyperspace node is up and running, proceeding with next steps."
 
 # Step 9: Download the required model with real-time progress
 echo "🔄 Downloading the required model..."
-aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf 2>&1 | tee /root/model_download.log
+
+# Run the model download and display the progress while checking Hive points in every 10 seconds
+while true; do
+    # Run the model download in the background
+    aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf 2>&1 | tee /root/model_download.log &
+    PID=$!
+
+    # Wait for a few seconds to allow the download to start
+    sleep 10
+
+    # Display Hive points every 10 seconds during the download process
+    while ps -p $PID > /dev/null; do
+        # Display the current Hive points
+        echo "📊 Checking your current Hive points..."
+        aios-cli hive points
+        sleep 10
+    done
+
+    # Break the loop once download completes
+    break
+done
 
 # Step 10: Verify if the model was downloaded successfully
 if grep -q "Download complete" /root/model_download.log; then
@@ -57,10 +77,9 @@ else
 fi
 
 # Step 11: Ask for the private key and save it securely
-echo "🔑 Please enter your private key (it will be saved to /root/my.pem):"
-read -s PRIVATE_KEY
-echo "$PRIVATE_KEY" > /root/my.pem
-chmod 600 /root/my.pem
+echo "🔑Enter your private key:"
+read -p "Private Key: " private_key
+echo $private_key > /root/my.pem
 echo "✅ Private key saved to /root/my.pem"
 
 # Step 12: Import private key
@@ -85,3 +104,4 @@ aios-cli hive points
 
 # Final message
 echo "✅ HyperSpace Node setup complete!"
+echo "ℹ️ You can use 'alt + A + D' to detach the screen and 'screen -r hyperspace' to reattach the screen."
