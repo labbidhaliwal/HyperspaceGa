@@ -1,169 +1,60 @@
 #!/bin/bash
 
-echo "==========================================="
-echo "🚀 Starting HyperSpace CLI Setup Script..."
-echo "==========================================="
-
 # Step 1: Install HyperSpace CLI
-echo "📥 Installing HyperSpace CLI..."
+echo "🚀 Installing HyperSpace CLI..."
 curl https://download.hyper.space/api/install | bash
-if [ $? -ne 0 ]; then
-    echo "❌ Installation failed! Exiting..."
-    exit 1
-fi
-echo "✅ HyperSpace CLI installed successfully!"
 
-echo "-------------------------------------------"
-
-# Step 2: Add aios-cli to PATH & reload bashrc
-echo "🔄 Updating PATH..."
+# Step 2: Reload .bashrc to apply environment changes
+echo "🔄 Reloading .bashrc to apply environment changes..."
 echo 'export PATH=$PATH:/root/.aios' >> ~/.bashrc
 source ~/.bashrc
 
-echo "🔍 Checking if aios-cli is available..."
-if ! command -v aios-cli &> /dev/null; then
-    echo "❌ aios-cli not found after installation! Exiting..."
-    exit 1
-fi
-echo "✅ aios-cli is available!"
+# Step 3: Start the Hyperspace node in the foreground
+echo "🚀 Starting the Hyperspace node..."
+aios-cli start &  # Runs in background but keeps the session open
 
-echo "-------------------------------------------"
+# Step 4: Wait for the node to initialize
+echo "⏳ Waiting for the node to start..."
+sleep 10  # Adjust time if needed
 
-# Step 3: Install screen if missing
-echo "🔍 Checking if screen is installed..."
-if ! command -v screen &> /dev/null; then
-    echo "📦 Installing screen..."
-    apt update && apt install -y screen
-    if [ $? -ne 0 ]; then
-        echo "❌ Failed to install screen! Exiting..."
-        exit 1
-    fi
-    echo "✅ screen installed successfully!"
-else
-    echo "✅ screen is already installed!"
-fi
-
-echo "-------------------------------------------"
-
-# Step 4: Kill any old Hyperspace screen session
-echo "🛑 Killing any old Hyperspace screen sessions..."
-screen -ls | grep "hyperspace" | awk '{print $1}' | xargs -I{} screen -S {} -X quit
-echo "✅ Old Hyperspace screen sessions terminated."
-
-echo "-------------------------------------------"
-
-# Step 5: Create a new screen session and start the node
-echo "🎥 Creating a screen session for Hyperspace..."
-screen -dmS hyperspace bash -c 'aios-cli start'
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to start Hyperspace node inside screen! Exiting..."
-    exit 1
-fi
-echo "✅ Hyperspace node started successfully in screen session!"
-
-echo "-------------------------------------------"
-
-# Step 6: Ensure the node starts before proceeding
-echo "⏳ Waiting for the node to initialize..."
-sleep 10
-echo "✅ Node initialization wait time completed."
-
-echo "-------------------------------------------"
-
-# Step 7: Prepare log file for model download
-MODEL_LOG="/root/model_download.log"
-echo "📝 Preparing model download log..."
-touch $MODEL_LOG
-
-# Step 8: Download the required model
+# Step 5: Download the required model with real-time progress
 echo "🔄 Downloading the required model..."
-screen -S hyperspace -X stuff "aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf > $MODEL_LOG 2>&1\n"
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to download the model! Exiting..."
-    exit 1
-fi
-echo "✅ Model download initiated!"
+aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf 2>&1 | tee /root/model_download.log
 
-echo "-------------------------------------------"
-
-# Step 9: Show model download progress with error handling
-echo "📊 Showing live download progress..."
-sleep 3
-
-if [ -f "$MODEL_LOG" ]; then
-    tail -f "$MODEL_LOG" &
+# Step 6: Verify if the model was downloaded successfully
+if grep -q "Download complete" /root/model_download.log; then
+    echo "✅ Model downloaded successfully!"
 else
-    echo "⚠️ Log file missing! Waiting for it to be created..."
-    while [ ! -f "$MODEL_LOG" ]; do sleep 2; done
-    tail -f "$MODEL_LOG" &
+    echo "❌ Model download failed. Check /root/model_download.log for details."
+    exit 1
 fi
 
-echo "-------------------------------------------"
-
-# Step 10: Ask for the private key and save it automatically
+# Step 7: Ask for the private key and save it securely
 echo "🔑 Please enter your private key (it will be saved to /root/my.pem):"
-read -r private_key
-echo "$private_key" > /root/my.pem
+read -s PRIVATE_KEY
+echo "$PRIVATE_KEY" > /root/my.pem
 chmod 600 /root/my.pem
-echo "✅ Private key saved securely!"
+echo "✅ Private key saved to /root/my.pem"
 
-echo "-------------------------------------------"
+# Step 8: Import private key
+echo "🔑 Importing your private key..."
+aios-cli hive import-keys /root/my.pem
 
-# Step 11: Import the private key
-echo "🔑 Importing private key..."
-screen -S hyperspace -X stuff "aios-cli hive import-keys /root/my.pem\n"
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to import private key! Exiting..."
-    exit 1
-fi
-echo "✅ Private key imported!"
-
-echo "-------------------------------------------"
-
-# Step 12: Log in to Hive
+# Step 9: Login to Hive
 echo "🔐 Logging into Hive..."
-screen -S hyperspace -X stuff "aios-cli hive login\n"
-if [ $? -ne 0 ]; then
-    echo "❌ Hive login failed! Exiting..."
-    exit 1
-fi
-echo "✅ Successfully logged into Hive!"
+aios-cli hive login
 
-echo "-------------------------------------------"
-
-# Step 13: Connect to Hive
+# Step 10: Connect to Hive
 echo "🌐 Connecting to Hive..."
-screen -S hyperspace -X stuff "aios-cli hive connect\n"
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to connect to Hive! Exiting..."
-    exit 1
-fi
-echo "✅ Successfully connected to Hive!"
+aios-cli hive connect
 
-echo "-------------------------------------------"
+# Step 11: Set Hive Tier
+echo "🏆 Setting your Hive tier to 3..."
+aios-cli hive select-tier 3
 
-# Step 14: Set Hive tier to 3
-echo "🏆 Setting Hive tier to 3..."
-screen -S hyperspace -X stuff "aios-cli hive select-tier 3\n"
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to set Hive tier! Exiting..."
-    exit 1
-fi
-echo "✅ Hive tier set to 3!"
-
-echo "-------------------------------------------"
-
-# Step 15: Display Hive points in a loop every 30 seconds
-echo "📊 Starting continuous Hive points check..."
-while true; do
-    echo "🔄 Checking Hive points..."
-    screen -S hyperspace -X stuff "aios-cli hive points\n"
-    sleep 30
-done &
-
-echo "-------------------------------------------"
+# Step 12: Display Hive points
+echo "📊 Checking your current Hive points..."
+aios-cli hive points
 
 # Final message
-echo "==========================================="
-echo "✅ 🎉 HyperSpace Node setup complete! 🎉 ✅"
-echo "==========================================="
+echo "✅ HyperSpace Node setup complete!"
