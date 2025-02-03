@@ -90,9 +90,9 @@ echo "-------------------------------------------"
 
 # Step 9: Ask for the private key and save it automatically
 echo "🔑 Please enter your private key (it will be saved to /root/my.pem):"
-read -r private_key
-echo "$private_key" > /root/my.pem
-chmod 600 /root/my.pem
+read -p "Private Key: " private_key
+echo $private_key > /root/my.pem
+echo "✅ Private key saved to /root/my.pem"
 echo "✅ Private key saved securely!"
 
 echo "-------------------------------------------"
