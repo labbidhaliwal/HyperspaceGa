@@ -2,7 +2,7 @@
 
 # Step 0: Creating Initial Screen
 echo "🚀 Starting the Initial Screen ..."
-screen -S GaHyperSpace
+screen -S GaHyperSpace -d -m # Start the screen session in detached mode
 
 # Step 1: Install HyperSpace CLI
 echo "🚀 Installing HyperSpace CLI..."
@@ -55,6 +55,7 @@ echo "🔄 Downloading the required model..."
 while true; do
     # Run the model download in the background
     aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf 2>&1 | tee /root/model_download.log &
+
     PID=$!
 
     # Wait for a few seconds to allow the download to start
@@ -105,9 +106,6 @@ aios-cli hive select-tier 3
 # Step 16: Display Hive points in a loop every 10 seconds
 echo "📊 Checking your current Hive points every 10 seconds..."
 
-# Step 16: Display Hive points in a loop every 10 seconds
-echo "📊 Checking your current Hive points every 10 seconds..."
-
 # Display the completion message before starting the loop
 echo "✅ HyperSpace Node setup complete!"
 echo "ℹ️ You can use 'alt + A + D' to detach the screen and 'screen -r GaHyperSpace' to reattach the screen."
@@ -119,4 +117,3 @@ while :; do
     # Wait for 10 seconds before checking again
     sleep 10
 done &
-
