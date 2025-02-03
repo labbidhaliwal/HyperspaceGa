@@ -51,7 +51,7 @@ echo "✅ Hyperspace node is up and running, proceeding with next steps."
 # Step 9: Download the required model with real-time progress
 echo "🔄 Downloading the required model..."
 
-# Run the model download and display the progress while checking Hive points in every 10 seconds
+# Run the model download without checking Hive points in every 10 seconds
 while true; do
     # Run the model download in the background
     aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf 2>&1 | tee /root/model_download.log &
@@ -61,17 +61,23 @@ while true; do
     # Wait for a few seconds to allow the download to start
     sleep 10
 
-    # Display Hive points every 10 seconds during the download process
+    # Check if the model download is still in progress and continue
     while ps -p $PID > /dev/null; do
-        # Display the current Hive points
-        echo "📊 Checking your current Hive points..."
-        aios-cli hive points
+        # Just wait for the download to finish without displaying Hive points
         sleep 10
     done
 
     # Break the loop once download completes
     break
 done
+
+# Step 10: Verify if the model was downloaded successfully
+if grep -q "Download complete" /root/model_download.log; then
+    echo "✅ Model downloaded successfully!"
+else
+    echo "❌ Model download failed. Check /root/model_download.log for details."
+    exit 1
+fi
 
 # Step 10: Verify if the model was downloaded successfully
 if grep -q "Download complete" /root/model_download.log; then
@@ -104,11 +110,9 @@ echo "🏆 Setting your Hive tier to 3..."
 aios-cli hive select-tier 3
 
 # Step 16: Display Hive points in a loop every 10 seconds
-echo "📊 Checking your current Hive points every 10 seconds..."
-
-# Display the completion message before starting the loop
-echo "✅ HyperSpace Node setup complete!"
-echo "ℹ️ You can use 'alt + A + D' to detach the screen and 'screen -r GaHyperSpace' to reattach the screen."
+echo "📊 Checking your current Hive points every 10 seconds... 
+✅ HyperSpace Node setup complete! 
+ℹ️ You can use 'alt + A + D' to detach the screen and 'screen -r GaHyperSpace' to reattach the screen."
 
 # Loop to check Hive points every 10 seconds
 while :; do
