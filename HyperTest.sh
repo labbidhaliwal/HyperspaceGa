@@ -9,13 +9,22 @@ echo "🔄 Reloading .bashrc to apply environment changes..."
 echo 'export PATH=$PATH:/root/.aios' >> ~/.bashrc
 source ~/.bashrc
 
-# Step 3: Start the Hyperspace node in the foreground
+# Step 3: Create a screen session and run aios-cli start in that screen
 echo "🚀 Starting the Hyperspace node..."
-aios-cli start &  # Runs in background but keeps the session open
+screen -S hyperspace -d -m bash -c "aios-cli start"
 
-# Step 4: Wait for the node to initialize
-echo "⏳ Waiting for the node to start..."
-sleep 10  # Adjust time if needed
+# Step 4: Wait for the node to start
+echo "⏳ Waiting for the Hyperspace node to start..."
+sleep 10 # Adjust the time if needed to wait for the node to initialize
+
+# Step 5: Check if the node is running
+echo "🔍 Checking node status..."
+screen -S hyperspace -X stuff "aios-cli status\n"
+
+# Step 6: Proceed with the next steps if the node is running
+echo "✅ Hyperspace node is up and running, proceeding with next steps."
+
+# Continue with other steps...
 
 # Step 5: Download the required model with real-time progress
 echo "🔄 Downloading the required model..."
