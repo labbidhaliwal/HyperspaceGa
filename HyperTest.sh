@@ -70,9 +70,14 @@ echo "✅ Node initialization wait time completed."
 
 echo "-------------------------------------------"
 
-# Step 7: Download the required model
+# Step 7: Prepare log file for model download
+MODEL_LOG="/root/model_download.log"
+echo "📝 Preparing model download log..."
+touch $MODEL_LOG
+
+# Step 8: Download the required model
 echo "🔄 Downloading the required model..."
-screen -S hyperspace -X stuff "aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf > /root/model_download.log 2>&1\n"
+screen -S hyperspace -X stuff "aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf > $MODEL_LOG 2>&1\n"
 if [ $? -ne 0 ]; then
     echo "❌ Failed to download the model! Exiting..."
     exit 1
@@ -81,23 +86,30 @@ echo "✅ Model download initiated!"
 
 echo "-------------------------------------------"
 
-# Step 8: Show model download progress
+# Step 9: Show model download progress with error handling
 echo "📊 Showing live download progress..."
 sleep 3
-tail -f /root/model_download.log &
+
+if [ -f "$MODEL_LOG" ]; then
+    tail -f "$MODEL_LOG" &
+else
+    echo "⚠️ Log file missing! Waiting for it to be created..."
+    while [ ! -f "$MODEL_LOG" ]; do sleep 2; done
+    tail -f "$MODEL_LOG" &
+fi
 
 echo "-------------------------------------------"
 
-# Step 9: Ask for the private key and save it automatically
+# Step 10: Ask for the private key and save it automatically
 echo "🔑 Please enter your private key (it will be saved to /root/my.pem):"
-read -p "Private Key: " private_key
-echo $private_key > /root/my.pem
-echo "✅ Private key saved to /root/my.pem"
+read -r private_key
+echo "$private_key" > /root/my.pem
+chmod 600 /root/my.pem
 echo "✅ Private key saved securely!"
 
 echo "-------------------------------------------"
 
-# Step 10: Import the private key
+# Step 11: Import the private key
 echo "🔑 Importing private key..."
 screen -S hyperspace -X stuff "aios-cli hive import-keys /root/my.pem\n"
 if [ $? -ne 0 ]; then
@@ -108,7 +120,7 @@ echo "✅ Private key imported!"
 
 echo "-------------------------------------------"
 
-# Step 11: Log in to Hive
+# Step 12: Log in to Hive
 echo "🔐 Logging into Hive..."
 screen -S hyperspace -X stuff "aios-cli hive login\n"
 if [ $? -ne 0 ]; then
@@ -119,7 +131,7 @@ echo "✅ Successfully logged into Hive!"
 
 echo "-------------------------------------------"
 
-# Step 12: Connect to Hive
+# Step 13: Connect to Hive
 echo "🌐 Connecting to Hive..."
 screen -S hyperspace -X stuff "aios-cli hive connect\n"
 if [ $? -ne 0 ]; then
@@ -130,7 +142,7 @@ echo "✅ Successfully connected to Hive!"
 
 echo "-------------------------------------------"
 
-# Step 13: Set Hive tier to 3
+# Step 14: Set Hive tier to 3
 echo "🏆 Setting Hive tier to 3..."
 screen -S hyperspace -X stuff "aios-cli hive select-tier 3\n"
 if [ $? -ne 0 ]; then
@@ -141,9 +153,13 @@ echo "✅ Hive tier set to 3!"
 
 echo "-------------------------------------------"
 
-# Step 14: Display Hive points
-echo "📊 To check your current Hive points, use the following command:"
-echo "   aios-cli hive points"
+# Step 15: Display Hive points in a loop every 30 seconds
+echo "📊 Starting continuous Hive points check..."
+while true; do
+    echo "🔄 Checking Hive points..."
+    screen -S hyperspace -X stuff "aios-cli hive points\n"
+    sleep 30
+done &
 
 echo "-------------------------------------------"
 
