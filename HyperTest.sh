@@ -9,11 +9,16 @@ echo "🔄 Reloading .bashrc to apply environment changes..."
 echo 'export PATH=$PATH:/root/.aios' >> ~/.bashrc
 source ~/.bashrc
 
-# Step 3: Create a screen session and run aios-cli start in that screen
-echo "🚀 Starting the Hyperspace node..."
-screen -S hyperspace -d -m bash -c "aios-cli start"
+# Step 3: Check if the screen session exists, if not, create it
+echo "🎥 Checking if Hyperspace screen session exists..."
+if ! screen -list | grep -q "hyperspace"; then
+  echo "🔄 Screen session not found. Creating new session..."
+  screen -S hyperspace -d -m bash -c "aios-cli start"
+else
+  echo "✅ Screen session 'hyperspace' already exists, skipping creation."
+fi
 
-# Step 4: Wait for the node to start (check if node is active after waiting)
+# Step 4: Wait for the node to start
 echo "⏳ Waiting for the Hyperspace node to start..."
 sleep 10 # Wait for node initialization, adjust time if needed
 
