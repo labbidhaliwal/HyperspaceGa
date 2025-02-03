@@ -6,7 +6,7 @@ curl https://download.hyper.space/api/install | bash
 
 # Step 2: Add the aios-cli path to .bashrc
 echo "🔄 Adding aios-cli path to .bashrc..."
-echo 'export PATH=$PATH:/root/.aios' >> ~/.bashrc
+export PATH=$PATH:~/.aios
 
 # Step 3: Reload .bashrc to apply environment changes
 echo "🔄 Reloading .bashrc..."
