@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Step 0: Creating Initial Screen
-echo "🚀 Starting the Initial Screen ..."
-screen -S GaHyperSpace -d -m # Start the screen session in detached mode
-
 # Step 1: Install HyperSpace CLI
 echo "🚀 Installing HyperSpace CLI..."
 curl https://download.hyper.space/api/install | bash
