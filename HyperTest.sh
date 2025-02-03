@@ -105,3 +105,4 @@ aios-cli hive points
 # Final message
 echo "✅ HyperSpace Node setup complete!"
 echo "ℹ️ You can use 'alt + A + D' to detach the screen and 'screen -r hyperspace' to reattach the screen."
+echo "📌 Use 'aios-cli hive points' to check your Hive points."
