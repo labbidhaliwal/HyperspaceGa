@@ -4,9 +4,12 @@
 echo "🚀 Installing HyperSpace CLI..."
 curl https://download.hyper.space/api/install | bash
 
-# Step 2: Reload bashrc to make sure the environment is updated
-echo "🔄 Reloading .bashrc to apply environment changes..."
-echo 'export PATH=$PATH:/root/.aios' >> ~/.bashrc
+# Step 2: Add the aios-cli path to .bashrc
+echo "🔄 Adding aios-cli path to .bashrc..."
+export PATH=$PATH:~/.aios
+
+# Step 3: Reload .bashrc to apply environment changes
+echo "🔄 Reloading .bashrc..."
 source ~/.bashrc
 
 # Step 3: Create a screen session to run the node in the background
