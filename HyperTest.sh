@@ -25,9 +25,21 @@ screen -S hyperspace -d -m bash -c "/root/.aios/aios-cli start"
 echo "⏳ Waiting for the Hyperspace node to start..."
 sleep 10 # Wait for node initialization, adjust time if needed
 
-# Step 7: Check if the node is running
-echo "🔍 Checking if Hyperspace node is running..."
-aios-cli status
+# Step 3: Check if aios-cli is available
+echo "🔍 Checking if aios-cli is installed and available..."
+which aios-cli
+
+# Step 4: Run aios-cli start directly
+echo "🚀 Starting the Hyperspace node..."
+/root/.aios/aios-cli start
+
+# Step 5: Wait for the node to start
+echo "⏳ Waiting for the Hyperspace node to start..."
+sleep 10  # Adjust the time if needed
+
+# Step 6: Check the node status
+echo "🔍 Checking node status..."
+/root/.aios/aios-cli status
 
 # Step 8: Proceed with the next steps if the node is running
 echo "✅ Hyperspace node is up and running, proceeding with next steps."
