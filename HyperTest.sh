@@ -27,6 +27,19 @@ sleep 10 # Wait for node initialization, adjust time if needed
 
 # Step 7: Check if the node is running
 echo "🔍 Checking if Hyperspace node is running..."
+
+# Verify if the screen session exists
+SCREEN_EXISTS=$(screen -ls | grep -q 'hyperspace' && echo "yes" || echo "no")
+
+if [ "$SCREEN_EXISTS" == "no" ]; then
+  echo "❌ Screen session not found! Attempting to restart the Hyperspace node..."
+  # Retry creating the screen session and running the command if it's not found
+  screen -S hyperspace -d -m bash -c "aios-cli start"
+  sleep 10
+fi
+
+# Check the status of the node inside the screen session
+echo "🔍 Checking the Hyperspace node status..."
 screen -S hyperspace -X stuff "aios-cli status\n"
 
 # Give it some time to check the status
