@@ -1,103 +1,75 @@
 #!/bin/bash
 
-# Step 0: Creating Initial Screen and running all commands inside it
+# Step 0: Creating the GaHyperSpace Screen and running the script inside it
 echo "🚀 Starting the Initial Screen and executing all steps inside it..."
-screen -S GaHyperSpace -dm bash -c '
+screen -S GaHyperSpace -dm bash
+
+# Attach to the screen and run the script interactively
+screen -S GaHyperSpace -X stuff $'#!/bin/bash\n'
 
 # Step 1: Install HyperSpace CLI
-echo "🚀 Installing HyperSpace CLI..."
-curl https://download.hyper.space/api/install | bash
+screen -S GaHyperSpace -X stuff $'echo "🚀 Installing HyperSpace CLI..."\n'
+screen -S GaHyperSpace -X stuff $'curl https://download.hyper.space/api/install | bash\n'
 
 # Step 2: Add the aios-cli path to .bashrc
-echo "🔄 Adding aios-cli path to .bashrc..."
-export PATH=$PATH:~/.aios
+screen -S GaHyperSpace -X stuff $'echo "🔄 Adding aios-cli path to .bashrc..."\n'
+screen -S GaHyperSpace -X stuff $'export PATH=$PATH:~/.aios\n'
 
 # Step 3: Reload .bashrc to apply environment changes
-echo "🔄 Reloading .bashrc..."
-source ~/.bashrc
+screen -S GaHyperSpace -X stuff $'echo "🔄 Reloading .bashrc..."\n'
+screen -S GaHyperSpace -X stuff $'source ~/.bashrc\n'
 
-# Step 4: Kill all existing screen sessions (if any)
-echo "🔴 Killing all existing screen sessions..."
-screen -ls | awk '"'"'/[0-9]+\./ {print $1}'"'"' | xargs -I {} screen -S {} -X quit
-echo "✅ All existing screen sessions have been terminated."
-
-# Step 5: Create a screen session and run aios-cli start in the background
-echo "🚀 Starting the Hyperspace node in the background..."
-screen -S hyperspace -d -m bash -c "/root/.aios/aios-cli start"
+# Step 5: Start Hyperspace node
+screen -S GaHyperSpace -X stuff $'echo "🚀 Starting the Hyperspace node..."\n'
+screen -S GaHyperSpace -X stuff $'/root/.aios/aios-cli start\n'
 
 # Step 6: Wait for the node to start
-echo "⏳ Waiting for the Hyperspace node to start..."
-sleep 10 # Wait for node initialization, adjust time if needed
+screen -S GaHyperSpace -X stuff $'echo "⏳ Waiting for the Hyperspace node to start..."\n'
+screen -S GaHyperSpace -X stuff $'sleep 10\n'
 
-# Step 7: Check if aios-cli is available
-echo "🔍 Checking if aios-cli is installed and available..."
-which aios-cli
+# Step 7: Check the node status
+screen -S GaHyperSpace -X stuff $'echo "🔍 Checking node status..."\n'
+screen -S GaHyperSpace -X stuff $'/root/.aios/aios-cli status\n'
 
-# Step 8: Run aios-cli start directly
-echo "🚀 Starting the Hyperspace node..."
-/root/.aios/aios-cli start
+# Step 8: Proceed with downloading the required model
+screen -S GaHyperSpace -X stuff $'echo "🔄 Downloading the required model..."\n'
+screen -S GaHyperSpace -X stuff $'aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf 2>&1 | tee /root/model_download.log\n'
 
-# Step 9: Wait for the node to start
-echo "⏳ Waiting for the Hyperspace node to start..."
-sleep 10  # Adjust the time if needed
+# Step 9: Verify if the model was downloaded successfully
+screen -S GaHyperSpace -X stuff $'if grep -q "Download complete" /root/model_download.log; then\n'
+screen -S GaHyperSpace -X stuff $'    echo "✅ Model downloaded successfully!"\n'
+screen -S GaHyperSpace -X stuff $'else\n'
+screen -S GaHyperSpace -X stuff $'    echo "❌ Model download failed. Check /root/model_download.log for details."\n'
+screen -S GaHyperSpace -X stuff $'    exit 1\n'
+screen -S GaHyperSpace -X stuff $'fi\n'
 
-# Step 10: Check the node status
-echo "🔍 Checking node status..."
-/root/.aios/aios-cli status
+# Step 10: Import the private key
+screen -S GaHyperSpace -X stuff $'echo "🔑 Enter your private key:"\n'
+screen -S GaHyperSpace -X stuff $'read -p "Private Key: " private_key\n'
+screen -S GaHyperSpace -X stuff $'echo $private_key > /root/my.pem\n'
+screen -S GaHyperSpace -X stuff $'echo "✅ Private key saved to /root/my.pem"\n'
 
-# Step 11: Proceed with the next steps if the node is running
-echo "✅ Hyperspace node is up and running, proceeding with next steps."
+# Step 11: Import the private key into Hive
+screen -S GaHyperSpace -X stuff $'aios-cli hive import-keys /root/my.pem\n'
 
-# Step 12: Download the required model with real-time progress
-echo "🔄 Downloading the required model..."
+# Step 12: Log in to Hive
+screen -S GaHyperSpace -X stuff $'echo "🔐 Logging into Hive..."\n'
+screen -S GaHyperSpace -X stuff $'aios-cli hive login\n'
 
-while true; do
-    aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf 2>&1 | tee /root/model_download.log &
-    PID=$!
-    sleep 10
-    while ps -p $PID > /dev/null; do
-        sleep 10
-    done
-    break
-done
+# Step 13: Connect to Hive
+screen -S GaHyperSpace -X stuff $'echo "🌐 Connecting to Hive..."\n'
+screen -S GaHyperSpace -X stuff $'aios-cli hive connect\n'
 
-# Step 13: Verify if the model was downloaded successfully
-if grep -q "Download complete" /root/model_download.log; then
-    echo "✅ Model downloaded successfully!"
-else
-    echo "❌ Model download failed. Check /root/model_download.log for details."
-    exit 1
-fi
+# Step 14: Set Hive Tier
+screen -S GaHyperSpace -X stuff $'echo "🏆 Setting your Hive tier to 3..."\n'
+screen -S GaHyperSpace -X stuff $'aios-cli hive select-tier 3\n'
 
-# Step 14: Ask for the private key and save it securely
-echo "🔑 Enter your private key:"
-read -p "Private Key: " private_key
-echo $private_key > /root/my.pem
-echo "✅ Private key saved to /root/my.pem"
+# Step 15: Start checking Hive points every 10 seconds
+screen -S GaHyperSpace -X stuff $'echo "📊 Checking your current Hive points every 10 seconds..."\n'
+screen -S GaHyperSpace -X stuff $'while :; do\n'
+screen -S GaHyperSpace -X stuff $'    aios-cli hive points\n'
+screen -S GaHyperSpace -X stuff $'    sleep 10\n'
+screen -S GaHyperSpace -X stuff $'done\n'
 
-# Step 15: Import private key
-echo "🔑 Importing your private key..."
-aios-cli hive import-keys /root/my.pem
-
-# Step 16: Login to Hive
-echo "🔐 Logging into Hive..."
-aios-cli hive login
-
-# Step 17: Connect to Hive
-echo "🌐 Connecting to Hive..."
-aios-cli hive connect
-
-# Step 18: Set Hive Tier
-echo "🏆 Setting your Hive tier to 3..."
-aios-cli hive select-tier 3
-
-# Step 19: Display Hive points in a loop every 10 seconds
-echo "📊 Checking your current Hive points every 10 seconds..." 
-echo "✅ HyperSpace Node setup complete!" 
-echo "ℹ️ You can use '"'"'alt + A + D'"'"' to detach the screen and '"'"'screen -r GaHyperSpace'"'"' to reattach the screen."
-
-while :; do
-    aios-cli hive points
-    sleep 10
-done
-'
+# Attach the screen to show live output
+screen -r GaHyperSpace
