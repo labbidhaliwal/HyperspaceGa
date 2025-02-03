@@ -53,7 +53,7 @@ aios-cli hive connect
 
 # Step 10: Set the tier level
 echo "🏆 Setting your Hive tier to 3..."
-aios-cli hive select-tier 3
+aios-cli hive select-tier 5
 
 # Step 11: Check points (optional)
 echo "📊 To check your current Hive points, use the following command:"
