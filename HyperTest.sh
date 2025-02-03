@@ -12,11 +12,6 @@ export PATH=$PATH:~/.aios
 echo "🔄 Reloading .bashrc..."
 source ~/.bashrc
 
-# Step 4: Kill all existing screen sessions (if any)
-echo "🔴 Killing all existing screen sessions..."
-screen -ls | awk '/[0-9]+\./ {print $1}' | xargs -I {} screen -S {} -X quit
-echo "✅ All existing screen sessions have been terminated."
-
 # Step 5: Create a screen session and run aios-cli start in the background
 echo "🚀 Starting the Hyperspace node in the background..."
 screen -S hyperspace -d -m bash -c "/root/.aios/aios-cli start"
