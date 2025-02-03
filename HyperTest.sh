@@ -103,12 +103,12 @@ aios-cli hive select-tier 2
 # Step 16: Display Hive points in a loop every 10 seconds
 echo "📊 Checking your current Hive points every 10 seconds..."
 echo "✅ HyperSpace Node setup complete!"
-echo "ℹ️ You can use 'CTRL + B + D' to detach the screen and 'tmux attach -t gaspace' to reattach the screen."
+echo "ℹ️ You can use 'CTRL + A + D' to detach the screen and 'screen -r gaspace' to reattach the screen."
 
 # Loop to check Hive points every 10 seconds
 while :; do
     # Display Hive points
-    echo "ℹ️ You can use 'CTRL + B + D' to detach the screen and 'tmux attach -t gaspace' to reattach the screen."
+    echo "ℹ️ You can use 'CTRL + A + D' to detach the screen and 'screen -r gaspace' to reattach the screen."
     aios-cli hive points
     # Wait for 10 seconds before checking again
     sleep 10
