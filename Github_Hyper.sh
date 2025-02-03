@@ -65,10 +65,9 @@ else
 fi
 
 # Step 11: Ask for the private key and save it securely
-echo "🔑 Please enter your private key (it will be saved to /root/my.pem):"
-read -s PRIVATE_KEY
-echo "$PRIVATE_KEY" > /root/my.pem
-chmod 600 /root/my.pem
+echo "🔑Enter your private key:"
+read -p "Private Key: " private_key
+echo $private_key > /root/my.pem
 echo "✅ Private key saved to /root/my.pem"
 
 # Step 12: Import private key
