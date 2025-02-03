@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Step 0: Creating Initial Screen
+echo "🚀 Starting the Initial Screen ..."
+screen -S GaHyperSpace
+
 # Step 1: Install HyperSpace CLI
 echo "🚀 Installing HyperSpace CLI..."
 curl https://download.hyper.space/api/install | bash
@@ -98,11 +102,21 @@ aios-cli hive connect
 echo "🏆 Setting your Hive tier to 3..."
 aios-cli hive select-tier 3
 
-# Step 16: Display Hive points
-echo "📊 Checking your current Hive points..."
-aios-cli hive points
+# Step 16: Display Hive points in a loop every 10 seconds
+echo "📊 Checking your current Hive points every 10 seconds..."
 
-# Final message
+# Step 16: Display Hive points in a loop every 10 seconds
+echo "📊 Checking your current Hive points every 10 seconds..."
+
+# Display the completion message before starting the loop
 echo "✅ HyperSpace Node setup complete!"
-echo "ℹ️ You can use 'alt + A + D' to detach the screen and 'screen -r hyperspace' to reattach the screen."
-echo "📌 Use 'aios-cli hive points' to check your Hive points."
+echo "ℹ️ You can use 'alt + A + D' to detach the screen and 'screen -r GaHyperSpace' to reattach the screen."
+
+# Loop to check Hive points every 10 seconds
+while :; do
+    # Display Hive points
+    aios-cli hive points
+    # Wait for 10 seconds before checking again
+    sleep 10
+done &
+
