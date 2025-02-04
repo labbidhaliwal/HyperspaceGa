@@ -12,55 +12,104 @@ export PATH=$PATH:~/.aios
 echo "🔄 Reloading .bashrc..."
 source ~/.bashrc
 
-# Step 3: Create a screen session to run the node in the background
-echo "🎥 Creating a screen session for Hyperspace..."
-screen -S hyperspace -d -m
+# Step 5: Create a screen session and run aios-cli start in the background
+echo "🚀 Starting the Hyperspace node in the background..."
+screen -S hyperspace -d -m bash -c "/root/.aios/aios-cli start"
 
-# Step 4: Start the Hyperspace node inside the screen session
-echo "🚀 Starting the Hyperspace node in the screen session..."
-screen -S hyperspace -X stuff "aios-cli start\n"
+# Step 6: Wait for the node to start
+echo "⏳ Waiting for the Hyperspace node to start..."
+sleep 10 # Wait for node initialization, adjust time if needed
 
-# Step 5: Wait for the node to initialize and be ready (you can adjust the sleep time if necessary)
-echo "⏳ Waiting for the node to start..."
-sleep 10 # Adjust time if needed to give the node enough time to start
+# Step 3: Check if aios-cli is available
+echo "🔍 Checking if aios-cli is installed and available..."
+which aios-cli
 
-# Step 6: Download the model (this will run in the same screen session)
+# Step 4: Run aios-cli start directly
+echo "🚀 Starting the Hyperspace node..."
+/root/.aios/aios-cli start
+
+# Step 5: Wait for the node to start
+echo "⏳ Waiting for the Hyperspace node to start..."
+sleep 10  # Adjust the time if needed
+
+# Step 6: Check the node status
+echo "🔍 Checking node status..."
+/root/.aios/aios-cli status
+
+# Step 8: Proceed with the next steps if the node is running
+echo "✅ Hyperspace node is up and running, proceeding with next steps."
+
+# Step 9: Download the required model with real-time progress
 echo "🔄 Downloading the required model..."
-screen -S hyperspace -X stuff "aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf\n"
 
-# Display the download progress by tailing the log file
-echo "📊 Showing download progress..."
-screen -S hyperspace -X stuff "tail -f /root/hyperspace_model_download.log\n"
+# Run the model download without checking Hive points in every 10 seconds
+while true; do
+    # Run the model download in the background
+    aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf 2>&1 | tee /root/model_download.log &
 
-# Step 7: Display the status of the screen session
-echo "✅ Model download command sent to the screen session."
+    PID=$!
 
-# Step 8: Ask for the private key to import and save it automatically
-echo "🔑 Please provide your private key."
+    # Wait for a few seconds to allow the download to start
+    sleep 10
 
-# Read the private key from the user input and save it to the file
-echo "Enter your private key:"
+    # Check if the model download is still in progress and continue
+    while ps -p $PID > /dev/null; do
+        # Just wait for the download to finish without displaying Hive points
+        sleep 10
+    done
+
+    # Break the loop once download completes
+    break
+done
+
+# Step 10: Verify if the model was downloaded successfully
+if grep -q "Download complete" /root/model_download.log; then
+    echo "✅ Model downloaded successfully!"
+else
+    echo "❌ Model download failed. Check /root/model_download.log for details."
+    exit 1
+fi
+
+# Step 10: Verify if the model was downloaded successfully
+if grep -q "Download complete" /root/model_download.log; then
+    echo "✅ Model downloaded successfully!"
+else
+    echo "❌ Model download failed. Check /root/model_download.log for details."
+    exit 1
+fi
+
+# Step 11: Ask for the private key and save it securely
+echo "🔑Enter your private key:"
 read -p "Private Key: " private_key
 echo $private_key > /root/my.pem
 echo "✅ Private key saved to /root/my.pem"
 
-# Step 9: Import the private key and login to Hive
+# Step 12: Import private key
 echo "🔑 Importing your private key..."
-aios-cli hive import-keys ./my.pem
+aios-cli hive import-keys /root/my.pem
 
+# Step 13: Login to Hive
 echo "🔐 Logging into Hive..."
 aios-cli hive login
 
+# Step 14: Connect to Hive
 echo "🌐 Connecting to Hive..."
 aios-cli hive connect
 
-# Step 10: Set the tier level
+# Step 15: Set Hive Tier
 echo "🏆 Setting your Hive tier to 3..."
 aios-cli hive select-tier 5
 
-# Step 11: Check points (optional)
-echo "📊 To check your current Hive points, use the following command:"
-echo "aios-cli hive points"
-
-# Step 12: Final message
+# Step 16: Display Hive points in a loop every 10 seconds
+echo "📊 Checking your current Hive points every 10 seconds..."
 echo "✅ HyperSpace Node setup complete!"
+echo "ℹ️ You can use 'CTRL + A + D' to detach the screen and 'screen -r gaspace' to reattach the screen."
+
+# Loop to check Hive points every 10 seconds
+while :; do
+    # Display Hive points
+    echo "ℹ️ You can use 'CTRL + A + D' to detach the screen and 'screen -r gaspace' to reattach the screen."
+    aios-cli hive points
+    # Wait for 10 seconds before checking again
+    sleep 10
+done &
