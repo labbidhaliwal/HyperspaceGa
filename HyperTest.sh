@@ -98,7 +98,7 @@ aios-cli hive connect
 
 # Step 15: Set Hive Tier
 echo "🏆 Setting your Hive tier to 3..."
-aios-cli hive select-tier 2
+aios-cli hive select-tier 5
 
 # Step 16: Display Hive points in a loop every 10 seconds
 echo "📊 Checking your current Hive points every 10 seconds..."
