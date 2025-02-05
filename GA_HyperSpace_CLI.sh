@@ -53,7 +53,7 @@ while true; do
         break  # Exit loop if installation succeeds
     else
         echo "❌ Installation failed: 'Failed to parse version from release data.' Retrying in 10 seconds..."
-        sleep 10  # Wait before retrying
+        sleep 5  # Wait before retrying
     fi
 done
 
