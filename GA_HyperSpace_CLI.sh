@@ -41,7 +41,7 @@ echo "🔄 Downloading the required model..."
 # Run the model download without checking Hive points in every 10 seconds
 while true; do
     # Run the model download in the background
-    aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf 2>&1 | tee /root/model_download.log &
+    aios-cli models add hf:TheBloke/Mistral-7B-Instruct-v0.1-GGUF:mistral-7b-instruct-v0.1.Q4_K_S.gguf 2>&1 | tee /root/model_download.log &
 
     PID=$!
 
