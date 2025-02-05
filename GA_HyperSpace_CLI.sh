@@ -31,26 +31,26 @@ echo "🔍 Checking node status..."
 # Step 8: Proceed with the next steps if the node is running
 echo "✅ Hyperspace node is up and running, proceeding with next steps."
 
-# Step 9: Download the required model with real-time progress
+# Step 9: Download the required model with live progress
 echo "🔄 Downloading the required model..."
-while true; do
-    # Run the model download in the background
-    aios-cli models add hf:TheBloke/Mistral-7B-Instruct-v0.1-GGUF:mistral-7b-instruct-v0.1.Q4_K_S.gguf 2>&1 | tee /root/model_download.log &
-    PID=$!
-    sleep 10
-    while ps -p $PID > /dev/null; do
-        sleep 10
-    done
-    break
-done
+aios-cli models add hf:TheBloke/Mistral-7B-Instruct-v0.1-GGUF:mistral-7b-instruct-v0.1.Q4_K_S.gguf | tee /root/model_download.log
 
-# Step 10: Verify model download
-if grep -q "Download complete" /root/model_download.log; then
-    echo "✅ Model downloaded successfully!"
-else
-    echo "❌ Model download failed. Check /root/model_download.log for details."
-    exit 1
-fi
+echo "🔄 Downloading the required model..."
+
+# Loop to retry the download if it fails
+while true; do
+    # Run the model download and show progress
+    aios-cli models add hf:TheBloke/Mistral-7B-Instruct-v0.1-GGUF:mistral-7b-instruct-v0.1.Q4_K_S.gguf | tee /root/model_download.log
+
+    # Check if download was successful
+    if grep -q "Download complete" /root/model_download.log; then
+        echo "✅ Model downloaded successfully!"
+        break  # Exit loop since download succeeded
+    else
+        echo "❌ Model download failed. Retrying in 10 seconds..."
+        sleep 5  # Wait before retrying
+    fi
+done
 
 # Step 11: Ask for the private key and save it securely
 echo "🔑 Enter your private key:"
