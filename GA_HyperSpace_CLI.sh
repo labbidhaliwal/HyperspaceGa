@@ -82,9 +82,9 @@ EOF
 
     # Step 8: Ask for private key securely
     echo "🔑 Enter your private key:"
-    read -s -p "Private Key: " private_key
-    echo -e "\n✅ Private key received."
-    echo "$private_key" > /root/my.pem
+    read -p "Private Key: " private_key
+    echo $private_key > /root/my.pem
+    echo "✅ Private key saved to /root/my.pem"
 
     # Step 9: Import private key
     echo "🔑 Importing your private key..."
