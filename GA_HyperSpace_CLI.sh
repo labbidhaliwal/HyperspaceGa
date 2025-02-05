@@ -24,10 +24,6 @@ sleep 10 # Wait for node initialization, adjust time if needed
 echo "🔍 Checking if aios-cli is installed and available..."
 which aios-cli
 
-# Step 4: Run aios-cli start directly
-echo "🚀 Starting the Hyperspace node..."
-/root/.aios/aios-cli start
-
 # Step 5: Wait for the node to start
 echo "⏳ Waiting for the Hyperspace node to start..."
 sleep 10  # Adjust the time if needed
