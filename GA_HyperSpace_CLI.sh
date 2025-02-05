@@ -1,8 +1,61 @@
 #!/bin/bash
 
+# Infinite loop to keep retrying the script if any part fails
+while true; do
+    printf "\n"
+    cat <<EOF
+
+
+░██████╗░░█████╗░  ░█████╗░██████╗░██╗░░░██╗██████╗░████████╗░█████╗░
+██╔════╝░██╔══██╗  ██╔══██╗██╔══██╗╚██╗░██╔╝██╔══██╗╚══██╔══╝██╔══██╗
+██║░░██╗░███████║  ██║░░╚═╝██████╔╝░╚████╔╝░██████╔╝░░░██║░░░██║░░██║
+██║░░╚██╗██╔══██║  ██║░░██╗██╔══██╗░░╚██╔╝░░██╔═══╝░░░░██║░░░██║░░██║
+╚██████╔╝██║░░██║  ╚█████╔╝██║░░██║░░░██║░░░██║░░░░░░░░██║░░░╚█████╔╝
+░╚═════╝░╚═╝░░╚═╝  ░╚════╝░╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░░░░░░░╚═╝░░░░╚════╝░
+EOF
+
+    printf "\n\n"
+
+    ##########################################################################################
+    #                                                                                        
+    #                🚀 THIS SCRIPT IS PROUDLY CREATED BY **GA CRYPTO**! 🚀                  
+    #                                                                                        
+    #   🌐 Join our revolution in decentralized networks and crypto innovation!               
+    #                                                                                        
+    # 📢 Stay updated:                                                                      
+    #     • Follow us on Telegram: https://t.me/GaCryptOfficial                             
+    #     • Follow us on X: https://x.com/GACryptoO                                         
+    ##########################################################################################
+
+    # Green color for advertisement
+    GREEN="\033[0;32m"
+    RESET="\033[0m"
+
+    # Print the advertisement using printf
+    printf "${GREEN}"
+    printf "🚀 THIS SCRIPT IS PROUDLY CREATED BY **GA CRYPTO**! 🚀\n"
+    printf "Stay connected for updates:\n"
+    printf "   • Telegram: https://t.me/GaCryptOfficial\n"
+    printf "   • X (formerly Twitter): https://x.com/GACryptoO\n"
+    printf "${RESET}"
+
+
 # Step 1: Install HyperSpace CLI
 echo "🚀 Installing HyperSpace CLI..."
-curl https://download.hyper.space/api/install | bash
+
+while true; do
+    # Run the installation
+    curl -s https://download.hyper.space/api/install | bash | tee /root/hyperspace_install.log
+
+    # Check if installation was successful
+    if ! grep -q "Failed to parse version from release data." /root/hyperspace_install.log; then
+        echo "✅ HyperSpace CLI installed successfully!"
+        break  # Exit loop if installation succeeds
+    else
+        echo "❌ Installation failed: 'Failed to parse version from release data.' Retrying in 10 seconds..."
+        sleep 10  # Wait before retrying
+    fi
+done
 
 # Step 2: Add the aios-cli path to .bashrc
 echo "🔄 Adding aios-cli path to .bashrc..."
