@@ -109,10 +109,10 @@ EOF
     # Step 14: Check Hive points in a loop every 10 seconds
     echo "📊 Checking your Hive points every 10 seconds..."
     echo "✅ HyperSpace Node setup complete!"
-    echo "ℹ️ Use 'CTRL + A + D' to detach the screen and 'screen -r hyperspace' to reattach."
+    echo "ℹ️ Use 'CTRL + A + D' to detach the screen and 'screen -r gaspace' to reattach."
 
     while true; do
-        echo "ℹ️ Press 'CTRL + A + D' to detach the screen, 'screen -r hyperspace' to reattach."
+        echo "ℹ️ Press 'CTRL + A + D' to detach the screen, 'screen -r gaspace' to reattach."
         aios-cli hive points
         sleep 10
     done
