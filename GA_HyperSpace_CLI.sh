@@ -69,7 +69,7 @@ EOF
     echo "🔄 Downloading the required model..."
 
     while true; do
-        aios-cli models add mlc-ai/Qwen2-0.5B-Instruct-q0f16-MLC:Qwen2-0.5B-Instruct-q0f16-MLC.gguf | tee /root/model_download.log
+        aios-cli models add hf:TheBloke/phi-2-GGUF:phi-2.Q4_K_M.gguf | tee /root/model_download.log
 
         if grep -q "Download complete" /root/model_download.log; then
             echo "✅ Model downloaded successfully!"
