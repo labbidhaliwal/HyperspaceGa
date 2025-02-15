@@ -9,7 +9,7 @@ fi
 # Infinite loop to keep retrying the script if any part fails
 while true; do
     printf "\n"
-    cat <<EOF
+cat <<EOF
 
 ░██████╗░░█████╗░  ░█████╗░██████╗░██╗░░░██╗██████╗░████████╗░█████╗░
 ██╔════╝░██╔══██╗  ██╔══██╗██╔══██╗╚██╗░██╔╝██╔══██╗╚══██╔══╝██╔══██╗
