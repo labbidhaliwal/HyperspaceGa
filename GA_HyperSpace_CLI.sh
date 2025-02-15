@@ -82,7 +82,7 @@ while true; do
     echo "🔑 Enter your private key:"
     read -s -p "Private Key: " private_key
     echo
-    echo $private_key | sudo tee /root/my.pem > /dev/null
+    echo "$private_key" | sudo tee /root/my.pem > /dev/null
     sudo chmod 600 /root/my.pem
     echo "✅ Private key saved to /root/my.pem"
 
