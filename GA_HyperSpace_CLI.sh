@@ -1,15 +1,9 @@
 #!/bin/bash
 
-# Ensure the script is run as root
-if [ "$(id -u)" -ne 0 ]; then
-    echo "🔴 This script must be run as root! Use: sudo $0"
-    exit 1
-fi
-
 # Infinite loop to keep retrying the script if any part fails
 while true; do
     printf "\n"
-cat <<EOF
+    cat <<EOF
 
 ░██████╗░░█████╗░  ░█████╗░██████╗░██╗░░░██╗██████╗░████████╗░█████╗░
 ██╔════╝░██╔══██╗  ██╔══██╗██╔══██╗╚██╗░██╔╝██╔══██╗╚══██╔══╝██╔══██╗
@@ -17,27 +11,32 @@ cat <<EOF
 ██║░░╚██╗██╔══██║  ██║░░██╗██╔══██╗░░╚██╔╝░░██╔═══╝░░░░██║░░░██║░░██║
 ╚██████╔╝██║░░██║  ╚█████╔╝██║░░██║░░░██║░░░██║░░░░░░░░██║░░░╚█████╔╝
 ░╚═════╝░╚═╝░░╚═╝  ░╚════╝░╚═╝░░╚═╝░░░╚═╝░░░╚═╝░░░░░░░░╚═╝░░░░╚════╝░
+
 EOF
 
     printf "\n\n"
 
-    # GA CRYPTO Banner
+    # Labbi Banner
     GREEN="\033[0;32m"
     RESET="\033[0m"
     printf "${GREEN}"
-    printf "🚀 THIS SCRIPT IS PROUDLY CREATED BY **GA CRYPTO**! 🚀\n"
+    printf "🚀 THIS SCRIPT IS PROUDLY CREATED BY **Labbi**! 🚀\n"
     printf "Stay connected for updates:\n"
-    printf "   • Telegram: https://t.me/GaCryptOfficial\n"
-    printf "   • X (formerly Twitter): https://x.com/GACryptoO\n"
+    printf "   • Telegram: https://t.me/LabbiOfficial\n"
+    printf "   • X (formerly Twitter): https://x.com/LabbiCrypto\n"
     printf "${RESET}"
 
     # Step 1: Install HyperSpace CLI
     echo "🚀 Installing HyperSpace CLI..."
+    
+    # Ensure log file is writable
+    sudo touch /tmp/hyperspace_install.log
+    sudo chmod 666 /tmp/hyperspace_install.log
 
     while true; do
-        sudo curl -s https://download.hyper.space/api/install | sudo bash | tee /root/hyperspace_install.log
+        sudo curl -s https://download.hyper.space/api/install | sudo bash | tee /tmp/hyperspace_install.log
 
-        if ! grep -q "Failed to parse version from release data." /root/hyperspace_install.log; then
+        if ! grep -q "Failed to parse version from release data." /tmp/hyperspace_install.log; then
             echo "✅ HyperSpace CLI installed successfully!"
             break
         else
@@ -48,9 +47,9 @@ EOF
 
     # Step 2: Add aios-cli to PATH and persist it
     echo "🔄 Adding aios-cli path to .bashrc..."
-    echo 'export PATH=$PATH:$HOME/.aios' | sudo tee -a /root/.bashrc
+    echo 'export PATH=$PATH:$HOME/.aios' | sudo tee -a /etc/profile
     export PATH=$PATH:$HOME/.aios
-    source /root/.bashrc
+    source /etc/profile
 
     # Step 3: Start the Hyperspace node in a screen session
     echo "🚀 Starting the Hyperspace node in the background..."
@@ -73,11 +72,14 @@ EOF
 
     # Step 7: Download the required model
     echo "🔄 Downloading the required model..."
+    
+    sudo touch /tmp/model_download.log
+    sudo chmod 666 /tmp/model_download.log
 
     while true; do
-        sudo aios-cli models add hf:second-state/Qwen1.5-1.8B-Chat-GGUF:Qwen1.5-1.8B-Chat-Q4_K_M.gguf | tee /root/model_download.log
+        sudo aios-cli models add hf:second-state/Qwen1.5-1.8B-Chat-GGUF:Qwen1.5-1.8B-Chat-Q4_K_M.gguf | tee /tmp/model_download.log
 
-        if grep -q "Download complete" /root/model_download.log; then
+        if grep -q "Download complete" /tmp/model_download.log; then
             echo "✅ Model downloaded successfully!"
             break
         else
@@ -89,7 +91,8 @@ EOF
     # Step 8: Ask for private key securely
     echo "🔑 Enter your private key:"
     read -s -p "Private Key: " private_key
-    echo "$private_key" | sudo tee /root/my.pem > /dev/null
+    echo
+    echo $private_key | sudo tee /root/my.pem > /dev/null
     sudo chmod 600 /root/my.pem
     echo "✅ Private key saved to /root/my.pem"
 
